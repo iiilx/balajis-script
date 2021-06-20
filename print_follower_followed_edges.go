@@ -1,10 +1,9 @@
 package main
 
 import (
-	"bytes"
-	"encoding/gob"
 	"fmt"
 	"github.com/dgraph-io/badger/v3"
+	"github.com/btcsuite/btcd/btcec"
 )
 
 func PrintEdges(dir string) {
@@ -23,20 +22,18 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 		prefix := dbPrefix
 
 		for nodeIterator.Seek(prefix); nodeIterator.ValidForPrefix(prefix); nodeIterator.Next() {
-			val, _ := nodeIterator.Item().ValueCopy(nil)
+			key := nodeIterator.Item().Key()
+			followerPKIDBytes := key[1:btcec.PubKeyBytesLenCompressed]
+			followerPKID := &PKID{}
+			copy(followerPKID[:], followerPKIDBytes)
 
-			followEntry := &FollowEntry{}
-			gob.NewDecoder(bytes.NewReader(val)).Decode(followEntry)
-    		fmt.Println(string(followEntry.FollowedPKID[:]), ' ', string(followEntry.FollowedPKID[:]))
+			followedPKIDBytes := key[1+btcec.PubKeyBytesLenCompressed:]
+			followedPKID := &PKID{}
+			copy(followedPKID[:], followedPKIDBytes)
+			fmt.Println(string(followerPKID[:]), ' ', string(followedPKID[:]))
 		}
 		return nil
 	})
-}
-
-type FollowEntry struct {
-	FollowerPKID *PKID
-	FollowedPKID *PKID
-	isDeleted bool
 }
 
 type PKID [33]byte

@@ -2,14 +2,14 @@
 
 sudo add-apt-repository ppa:longsleep/golang-backports
 sudo apt update
+sudo apt -y install python3-pip
 sudo apt -y install golang-go
+cd ~/
 git clone https://github.com/bitclout/core.git
 cd core
 go build
 ./core run > /dev/null 2>&1 &
-cd ..
-git clone https://github.com/andrewarrow/balajis-script.git
-cd balajis-script
+cd ~/balajis-script
 go mod vendor
 go build
 mkdir /root/acopy
