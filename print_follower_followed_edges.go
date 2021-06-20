@@ -3,8 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/dgraph-io/badger/v3"
-	"github.com/btcsuite/btcd/btcec"
 )
+
+const (
+	PubKeyBytesLenCompressed = 33
+)
+
 
 func PrintEdges(dir string) {
 	db, _ := badger.Open(badger.DefaultOptions(dir))
@@ -23,11 +27,11 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 
 		for nodeIterator.Seek(prefix); nodeIterator.ValidForPrefix(prefix); nodeIterator.Next() {
 			key := nodeIterator.Item().Key()
-			followerPKIDBytes := key[1:btcec.PubKeyBytesLenCompressed]
+			followerPKIDBytes := key[1:PubKeyBytesLenCompressed]
 			followerPKID := &PKID{}
 			copy(followerPKID[:], followerPKIDBytes)
 
-			followedPKIDBytes := key[1+btcec.PubKeyBytesLenCompressed:]
+			followedPKIDBytes := key[1+PubKeyBytesLenCompressed:]
 			followedPKID := &PKID{}
 			copy(followedPKID[:], followedPKIDBytes)
 			fmt.Println(string(followerPKID[:]), ' ', string(followedPKID[:]))
@@ -35,5 +39,4 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 		return nil
 	})
 }
-
 type PKID [33]byte
