@@ -1,9 +1,8 @@
 #!/bin/bash
 
-sudo apt install golang-go
 sudo add-apt-repository ppa:longsleep/golang-backports
 sudo apt update
-sudo apt install golang-go
+sudo apt -y install golang-go
 git clone https://github.com/bitclout/core.git
 cd core
 go build
