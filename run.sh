@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo apt install golang-go
 sudo add-apt-repository ppa:longsleep/golang-backports
 sudo apt update
