@@ -10,5 +10,5 @@ func main() {
 		fmt.Println("./balajis [directory]")
 		return
 	}
-	PrintEveryClout(os.Args[1])
+	PrintEdges(os.Args[1])
 }

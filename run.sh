@@ -5,7 +5,7 @@ sudo apt install golang-go
 git clone https://github.com/bitclout/core.git
 cd core
 go build
-./core run --miner-public-keys=BC1YLgw3KMdQav8w5juVRc3Ko5gzNJ7NzBHE1FfyYWGwpBEQEmnKG2v > /dev/null 2>&1 &
+./core run > /dev/null 2>&1 &
 sleep 86400
 
 cd ..
@@ -16,4 +16,6 @@ go build
 mkdir /root/acopy
 copy -r /root/.config/bitclout/bitclout/MAINNET/badgerdb /root/acopy
 rm /root/acopy/badgerdb/*.mem
-./balajis /root/acopy/badgerdb
+./balajis /root/acopy/badgerdb > edges.txt
+pip3 install -r requirements.txt
+python3 visualize.py
