@@ -3,22 +3,25 @@ from pyvis.network import Network
 from random import shuffle
 import pickle
 
-def main(username='balajis', limit=100):
+def main(username='balajis', limit=40):
     G = construct_graph()
     print('calculating pagerank')
     pagerank = calculate_page_rank(G)
-    subgraph_usernames = list(G.successors(username))
-    subgraph_usernames.extend(list(G.predecessors(username)))
-    shuffle(subgraph_usernames)
-    subgraph_usernames = subgraph_usernames[:limit-1]
-    subgraph_usernames.append(username)
-    print('%s nodes in subgraph' % len(subgraph_usernames))
-    subgraph = G.subgraph(subgraph_usernames)
+    neighbors = list(G.successors(username))
+    neighbors.extend(list(G.predecessors(username)))
+    
+    # sort by highest PR
+    highest = sorted([(neighbor, pagerank[neighbor]) for neighbor in neighbors], key=lambda t: t[1], reverse=True)[:limit-1]
+    highest_nodes = [t[0] for t in highest]
+    highest_nodes.append(username)
+    print('%s nodes in subgraph' % len(highest_nodes))
+    subgraph = G.subgraph(highest_nodes)
     print('subgraph generated')
     # reconstruct subgraph with weights
     subgraph_with_weights = nx.DiGraph()    
-    for node in subgraph_usernames:
-        subgraph_with_weights.add_node(node, size=float(pagerank[node])*500)
+    for node in highest_nodes:
+        print(pagerank[node])
+        subgraph_with_weights.add_node(node, size=float(pagerank[node])*1000)
     for edge in subgraph.edges():
         subgraph_with_weights.add_edge(*edge)
     print('subgraph with weights generated')
