@@ -31,7 +31,7 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 		nodeIterator := txn.NewIterator(opts)
 		defer nodeIterator.Close()
 		prefix := dbPrefix
-
+		missingKeyCount := 0
 		for nodeIterator.Seek(prefix); nodeIterator.ValidForPrefix(prefix); nodeIterator.Next() {
 			key := nodeIterator.Item().Key()
 			followerPKIDBytes := key[1:PubKeyBytesLenCompressed+1]
@@ -44,8 +44,8 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 			followedProfileKey := _dbKeyForPKIDToProfileEntry(followedPKID)
 			followedProfileItem, err := txn.Get(followedProfileKey)
 			if err != nil {
-				fmt.Println(err)
-				return err
+				missingKeyCount += 1
+				continue
 			}
 			followedProfileEntry := &ProfileEntry{}
 			err = followedProfileItem.Value(func(val []byte) error {
@@ -60,8 +60,8 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 			followerProfileKey := _dbKeyForPKIDToProfileEntry(followerPKID)
 			followerProfileItem, err := txn.Get(followerProfileKey)
 			if err != nil {
-				fmt.Println(err)
-				return err
+				missingKeyCount += 1
+				continue
 			}
 			followerProfileEntry := &ProfileEntry{}
 			err = followerProfileItem.Value(func(val []byte) error {
