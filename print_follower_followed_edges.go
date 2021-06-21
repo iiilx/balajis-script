@@ -74,6 +74,7 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 			}
 			fmt.Println(string(followedProfileEntry.Username), string(followerProfileEntry.Username))
 		}
+		fmt.Println(missingKeyCount, "missing keys")
 		return nil
 	})
 }
