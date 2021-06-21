@@ -35,13 +35,14 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 		for nodeIterator.Seek(prefix); nodeIterator.ValidForPrefix(prefix); nodeIterator.Next() {
 			key := nodeIterator.Item().Key()
 			followerPKIDBytes := key[1:PubKeyBytesLenCompressed]
+			fmt.Println("length of followerPKIDBytes is ", len(followerPKIDBytes))
 			followerPKID := &PKID{}
 			copy(followerPKID[:], followerPKIDBytes)
 
 			followedPKIDBytes := key[1+PubKeyBytesLenCompressed:]
+			fmt.Println("length of followedPKIDBytes is ", len(followefollowedPKIDBytesPKIDBytes))
 			followedPKID := &PKID{}
 			copy(followedPKID[:], followedPKIDBytes)
-			fmt.Println(string(followerPKID[:]), ' ', string(followedPKID[:]))
 			followedProfileKey := _dbKeyForPKIDToProfileEntry(followedPKID)
 			followedProfileItem, err := txn.Get(followedProfileKey)
 			if err != nil {
