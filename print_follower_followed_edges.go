@@ -1,20 +1,27 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"encoding/gob"
 	"github.com/dgraph-io/badger/v3"
 )
-
+var _PrefixPKIDToProfileEntry = []byte{23}
 const (
 	PubKeyBytesLenCompressed = 33
+	PrefixFollowerPKIDToFollowedPKID = byte(28)
 )
 
+func _dbKeyForPKIDToProfileEntry(pkid *PKID) []byte {
+	prefixCopy := append([]byte{}, _PrefixPKIDToProfileEntry...)
+	key := append(prefixCopy, pkid[:]...)
+	return key
+}
 
 func PrintEdges(dir string) {
 	db, _ := badger.Open(badger.DefaultOptions(dir))
 	defer db.Close()
-	prefixFollowerPKIDToFollowedPKID := byte(28)
-	iterateFollowEntries(db, []byte{prefixFollowerPKIDToFollowedPKID})
+	iterateFollowEntries(db, []byte{PrefixFollowerPKIDToFollowedPKID})
 }
 
 
@@ -35,8 +42,35 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 			followedPKID := &PKID{}
 			copy(followedPKID[:], followedPKIDBytes)
 			fmt.Println(string(followerPKID[:]), ' ', string(followedPKID[:]))
+			followedProfileKey := _dbKeyForPKIDToProfileEntry(followedPKID)
+			followedProfileItem, err := txn.Get(followedProfileKey)
+			if err != nil {
+				return err
+			}
+			followedProfileEntry := &ProfileEntry{}
+			err = followedProfileItem.Value(func(val []byte) error {
+				gob.NewDecoder(bytes.NewReader(val)).Decode(followedProfileEntry)
+				return nil
+			})
+			if err != nil {
+				return err
+			}
+
+			followerProfileKey := _dbKeyForPKIDToProfileEntry(followerPKID)
+			followerProfileItem, err := txn.Get(followerProfileKey)
+			if err != nil {
+				return err
+			}
+			followerProfileEntry := &ProfileEntry{}
+			err = followerProfileItem.Value(func(val []byte) error {
+				gob.NewDecoder(bytes.NewReader(val)).Decode(followerProfileEntry)
+				return nil
+			})
+			if err != nil {
+				return err
+			}
+			fmt.Println(string(followedProfileEntry.Username), ' ', string(followerProfileEntry.Username))
 		}
 		return nil
 	})
 }
-type PKID [33]byte

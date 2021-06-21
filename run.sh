@@ -9,7 +9,7 @@ git clone https://github.com/bitclout/core.git
 cd core
 go build
 echo "Running bitcout in background..."
-./core run > /dev/null 2>&1 &
+nohup ./core run > out.log 2>&1 &
 cd ~/balajis-script
 go mod vendor
 go build
