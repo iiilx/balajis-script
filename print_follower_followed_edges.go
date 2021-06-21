@@ -72,7 +72,7 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 				fmt.Println(err)
 				return err
 			}
-			fmt.Println(string(followedProfileEntry.Username), ' ', string(followerProfileEntry.Username))
+			fmt.Println(string(followedProfileEntry.Username), string(followerProfileEntry.Username))
 		}
 		return nil
 	})
