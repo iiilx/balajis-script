@@ -40,7 +40,7 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 			copy(followerPKID[:], followerPKIDBytes)
 
 			followedPKIDBytes := key[1+PubKeyBytesLenCompressed:]
-			fmt.Println("length of followedPKIDBytes is ", len(followefollowedPKIDBytesPKIDBytes))
+			fmt.Println("length of followedPKIDBytes is ", len(followedPKIDBytes))
 			followedPKID := &PKID{}
 			copy(followedPKID[:], followedPKIDBytes)
 			followedProfileKey := _dbKeyForPKIDToProfileEntry(followedPKID)
