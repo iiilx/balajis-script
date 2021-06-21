@@ -45,6 +45,7 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 			followedProfileKey := _dbKeyForPKIDToProfileEntry(followedPKID)
 			followedProfileItem, err := txn.Get(followedProfileKey)
 			if err != nil {
+				fmt.Println(err)
 				return err
 			}
 			followedProfileEntry := &ProfileEntry{}
@@ -53,12 +54,14 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 				return nil
 			})
 			if err != nil {
+				fmt.Println(err)
 				return err
 			}
 
 			followerProfileKey := _dbKeyForPKIDToProfileEntry(followerPKID)
 			followerProfileItem, err := txn.Get(followerProfileKey)
 			if err != nil {
+				fmt.Println(err)
 				return err
 			}
 			followerProfileEntry := &ProfileEntry{}
@@ -67,6 +70,7 @@ func iterateFollowEntries(db *badger.DB, dbPrefix []byte) {
 				return nil
 			})
 			if err != nil {
+				fmt.Println(err)
 				return err
 			}
 			fmt.Println(string(followedProfileEntry.Username), ' ', string(followerProfileEntry.Username))
